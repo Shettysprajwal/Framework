@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package com.pqvcf.zkp.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.zkp.grpc";
+option java_outer_classname = "ZkpProto";
+
+service ZkProofService {
+    rpc GenerateProof(ProofRequest) returns (ProofResponse);
+    rpc VerifyProof(VerifyRequest) returns (VerifyResponse);
+}
+
+message ProofRequest {
+    string proof_type = 1;
+    int64 secret_witness_value = 2;
+    string public_inputs_json = 3;
+}
+
+message ProofResponse {
+    string proof_id = 1;
+    string proof_type = 2;
+    string commitment_hex = 3;
+    string challenge_hex = 4;
+    string response_hex = 5;
+    string public_inputs_json = 6;
+    bool verified = 7;
+}
+
+message VerifyRequest {
+    string proof_id = 1;
+    string challenge_hex = 2;
+    string response_hex = 3;
+    string commitment_hex = 4;
+}
+
+message VerifyResponse {
+    bool is_valid = 1;
+}

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package com.pqvcf.translation.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.translation.grpc";
+option java_outer_classname = "TranslationProto";
+
+service RuleTranslationService {
+    rpc TranslateCNLRule(TranslationRequest) returns (TranslationDetailResponse);
+    rpc GetRulesForRegulation(RulesRequest) returns (RulesListResponse);
+}
+
+message TranslationRequest {
+    string regulation_short_name = 1;
+    string article_number = 2;
+    string clause_number = 3;
+    string raw_source_text = 4;
+}
+
+message TranslationDetailResponse {
+    string id = 1;
+    string regulation_short_name = 2;
+    string article_number = 3;
+    string clause_number = 4;
+    string raw_source_text = 5;
+    string deontic_operator = 6;
+    string subject = 7;
+    string action = 8;
+    string target = 9;
+    string constraint = 10;
+    string smt_spec = 11;
+    string odrl_policy = 12;
+    bool is_valid = 13;
+    string validation_message = 14;
+}
+
+message RulesRequest {
+    string regulation_short_name = 1;
+}
+
+message RulesListResponse {
+    repeated TranslationDetailResponse rules = 1;
+}

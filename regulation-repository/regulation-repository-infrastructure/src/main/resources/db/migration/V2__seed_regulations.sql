@@ -1,0 +1,90 @@
+-- Seed Regulations
+INSERT INTO regulations (id, name, short_name, primary_jurisdiction, version, effective_date, description, status, formal_spec, created_at, updated_at) VALUES
+('a0f7e42d-2090-4822-bcfa-14f76228308d', 
+ 'General Data Protection Regulation', 
+ 'GDPR', 
+ 'EU', 
+ '2016/679', 
+ '2018-05-25', 
+ 'Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data.', 
+ 'ACTIVE', 
+ '(declare-const src_jurisdiction String) (declare-const dest_jurisdiction String) (declare-const data_category String) (declare-const adequacy_decision Bool) (declare-const appropriate_safeguards Bool) (assert (= src_jurisdiction "EU")) (assert (not (= dest_jurisdiction "EU"))) (assert (or adequacy_decision appropriate_safeguards))', 
+ NOW(), NOW()),
+
+('e0a8f702-0a94-793f-b80f-3bf81bf623f8', 
+ 'Digital Personal Data Protection Act', 
+ 'DPDP', 
+ 'IN', 
+ '2023', 
+ '2023-08-11', 
+ 'An Act to provide for the processing of digital personal data in a manner that recognises both the right of individuals to protect their personal data and the need to process such personal data for lawful purposes.', 
+ 'ACTIVE', 
+ '(declare-const dest_jurisdiction String) (declare-const restricted_country Bool) (assert (not restricted_country))', 
+ NOW(), NOW()),
+
+('02b3c4d5-e6f7-0123-4567-89abcdef0123', 
+ 'Health Insurance Portability and Accountability Act', 
+ 'HIPAA', 
+ 'US', 
+ '1996', 
+ '1996-08-21', 
+ 'United States legislation that provides data privacy and security provisions for safeguarding medical information (Protected Health Information - PHI).', 
+ 'ACTIVE', 
+ '(declare-const data_category String) (declare-const access_control_enabled Bool) (declare-const transmission_security_enabled Bool) (assert (= data_category "HEALTH")) (assert (and access_control_enabled transmission_security_enabled))', 
+ NOW(), NOW());
+
+-- Seed Articles
+INSERT INTO articles (id, regulation_id, article_number, title, content, deontic_formula, odrl_policy, created_at, updated_at) VALUES
+('b725c4ef-7e61-460d-85ec-08e5e8e390c5', 
+ 'a0f7e42d-2090-4822-bcfa-14f76228308d', 
+ 'Article 44', 
+ 'General principle for transfers', 
+ 'Any transfer of personal data which are undergoing processing or are intended for processing after transfer to a third country or to an international organisation shall take place only if, subject to the other provisions of this Regulation, the conditions laid down in this Chapter are complied with by the controller and processor.', 
+ '(assert (and (not (= dest_jurisdiction "EU")) (not (or adequacy_decision appropriate_safeguards))))', 
+ '{"@context": "http://www.w3.org/ns/odrl.jsonld", "@type": "Policy", "prohibition": [{"target": "personal_data", "action": "transfer"}]}', 
+ NOW(), NOW()),
+
+('c836d5f0-8f72-571e-96fd-19f6f9f401d6', 
+ 'a0f7e42d-2090-4822-bcfa-14f76228308d', 
+ 'Article 45', 
+ 'Transfers on the basis of an adequacy decision', 
+ 'A transfer of personal data to a third country or an international organisation may take place where the Commission has decided that the third country, a territory or one or more specified sectors within that third country, or the international organisation in question ensures an adequate level of protection.', 
+ '(assert (= adequacy_decision true))', 
+ '{"@context": "http://www.w3.org/ns/odrl.jsonld", "@type": "Policy", "permission": [{"target": "personal_data", "action": "transfer", "constraint": [{"leftOperand": "dest_jurisdiction", "operator": "eq", "rightOperand": "adequate_countries"}]}]}', 
+ NOW(), NOW()),
+
+('d947e6f1-9f83-682f-a7fe-2af70af512e7', 
+ 'a0f7e42d-2090-4822-bcfa-14f76228308d', 
+ 'Article 46', 
+ 'Transfers subject to appropriate safeguards', 
+ 'In the absence of a decision pursuant to Article 45(3), a controller or processor may transfer personal data to a third country or an international organisation only if the controller or processor has provided appropriate safeguards, and on condition that enforceable data subject rights and effective legal remedies for data subjects are available.', 
+ '(assert (= appropriate_safeguards true))', 
+ '{"@context": "http://www.w3.org/ns/odrl.jsonld", "@type": "Policy", "permission": [{"target": "personal_data", "action": "transfer", "constraint": [{"leftOperand": "safeguard", "operator": "eq", "rightOperand": "standard_contractual_clauses"}]}]}', 
+ NOW(), NOW()),
+
+('f1b9a813-1ba5-8a40-c91a-4c092c0734a9', 
+ 'e0a8f702-0a94-793f-b80f-3bf81bf623f8', 
+ 'Section 16', 
+ 'Transfer of personal data outside India', 
+ 'The Central Government may, by notification, restrict the transfer of personal data by a Significant Data Fiduciary for processing to such country or territory outside India as may be notified.', 
+ '(assert (= restricted_country true))', 
+ '{"@context": "http://www.w3.org/ns/odrl.jsonld", "@type": "Policy", "prohibition": [{"target": "personal_data", "action": "transfer", "constraint": [{"leftOperand": "dest_jurisdiction", "operator": "in", "rightOperand": "restricted_countries"}]}]}', 
+ NOW(), NOW()),
+
+('13c4d5e6-f701-2345-6789-abcdef012345', 
+ '02b3c4d5-e6f7-0123-4567-89abcdef0123', 
+ '§164.312', 
+ 'Technical safeguards', 
+ 'A covered entity or business associate must, in accordance with § 164.306, implement technical safeguards including access control, transmission security, audit controls, integrity, and person or entity authentication.', 
+ '(assert (and access_control_enabled transmission_security_enabled))', 
+ '{"@context": "http://www.w3.org/ns/odrl.jsonld", "@type": "Policy", "obligation": [{"target": "protected_health_information", "action": "encrypt_transit"}, {"target": "protected_health_information", "action": "enforce_access_control"}]}', 
+ NOW(), NOW());
+
+-- Seed Clauses
+INSERT INTO clauses (id, article_id, clause_number, content, clause_type) VALUES
+('00000000-0000-0000-0000-000000000001', 'b725c4ef-7e61-460d-85ec-08e5e8e390c5', '44', 'Any transfer of personal data shall take place only if conditions are met.', 'PROHIBITION'),
+('00000000-0000-0000-0000-000000000002', 'c836d5f0-8f72-571e-96fd-19f6f9f401d6', '45(1)', 'A transfer may take place where the Commission has decided that the third country ensures adequate level of protection.', 'PERMISSION'),
+('00000000-0000-0000-0000-000000000003', 'd947e6f1-9f83-682f-a7fe-2af70af512e7', '46(1)', 'A controller or processor may transfer personal data only if they have provided appropriate safeguards.', 'PERMISSION'),
+('00000000-0000-0000-0000-000000000004', 'f1b9a813-1ba5-8a40-c91a-4c092c0734a9', '16(1)', 'The Central Government may restrict transfer of personal data to notified countries.', 'PROHIBITION'),
+('00000000-0000-0000-0000-000000000005', '13c4d5e6-f701-2345-6789-abcdef012345', '164.312(a)(1)', 'Access control. Implement technical policies to allow access only to authorized persons/programs.', 'OBLIGATION'),
+('00000000-0000-0000-0000-000000000006', '13c4d5e6-f701-2345-6789-abcdef012345', '164.312(e)(1)', 'Transmission security. Implement measures to guard against unauthorized access during transmission.', 'OBLIGATION');

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>pqvcf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>zk-proof-engine</artifactId>
+    <packaging>pom</packaging>
+    <name>PQVCF — Module 7: Zero-Knowledge Compliance Proof Engine</name>
+    <description>
+        Module 7 of PQVCF. Generates and verifies confidentiality-preserving compliance proofs
+        using custom Pedersen commitments and interactive/non-interactive Sigma protocols.
+    </description>
+
+    <modules>
+        <module>zk-proof-engine-domain</module>
+        <module>zk-proof-engine-application</module>
+        <module>zk-proof-engine-infrastructure</module>
+        <module>zk-proof-engine-api</module>
+    </modules>
+</project>

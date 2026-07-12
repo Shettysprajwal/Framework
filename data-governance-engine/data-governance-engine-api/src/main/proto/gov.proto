@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package com.pqvcf.governance.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.governance.grpc";
+option java_outer_classname = "GovProto";
+
+service DataGovernance {
+    rpc EvaluateTransfer(TransferRequest) returns (TransferResponse);
+}
+
+message TransferRequest {
+    string source_country = 1;
+    string target_country = 2;
+    string data_category = 3;
+    string processing_purpose = 4;
+}
+
+message TransferResponse {
+    string decision_id = 1;
+    string source_country = 2;
+    string target_country = 3;
+    string data_category = 4;
+    string processing_purpose = 5;
+    string decision = 6;
+    string reasoning = 7;
+    repeated string citations = 8;
+    string evidence_link = 9;
+    string created_at = 10;
+}

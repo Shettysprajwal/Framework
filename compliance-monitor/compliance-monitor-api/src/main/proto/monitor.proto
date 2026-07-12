@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.pqvcf.monitor.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.monitor.grpc";
+option java_outer_classname = "MonitorProto";
+
+service ComplianceMonitor {
+    rpc IngestSimulatedEvent(EventRequest) returns (IngestResponse);
+}
+
+message EventRequest {
+    string source = 1;
+    string destination = 2;
+    string data_category = 3;
+    int64 size_bytes = 4;
+}
+
+message IngestResponse {
+    bool accepted = 1;
+}

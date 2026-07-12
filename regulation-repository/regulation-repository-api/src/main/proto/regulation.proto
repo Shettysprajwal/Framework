@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package com.pqvcf.regulation.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.regulation.grpc";
+option java_outer_classname = "RegulationProto";
+
+service RegulationService {
+    rpc GetRegulationByShortName(RegulationRequest) returns (RegulationDetailResponse);
+    rpc CheckJurisdictionAdequacy(AdequacyRequest) returns (AdequacyResponse);
+}
+
+message RegulationRequest {
+    string short_name = 1;
+}
+
+message RegulationDetailResponse {
+    string id = 1;
+    string name = 2;
+    string short_name = 3;
+    string primary_jurisdiction = 4;
+    string version = 5;
+    string status = 6;
+    string description = 7;
+    string formal_spec = 8;
+    repeated ArticleDetail articles = 9;
+}
+
+message ArticleDetail {
+    string id = 1;
+    string article_number = 2;
+    string title = 3;
+    string content = 4;
+    string deontic_formula = 5;
+    string odrl_policy = 6;
+    repeated ClauseDetail clauses = 7;
+}
+
+message ClauseDetail {
+    string id = 1;
+    string clause_number = 2;
+    string content = 3;
+    string clause_type = 4;
+}
+
+message AdequacyRequest {
+    string source_jurisdiction = 1;
+    string target_jurisdiction = 2;
+}
+
+message AdequacyResponse {
+    bool is_adequate = 1;
+}

@@ -1,0 +1,35 @@
+# Build Stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY pqvcf-shared-kernel/pom.xml pqvcf-shared-kernel/
+COPY regulation-repository/pom.xml regulation-repository/
+COPY regulation-repository/regulation-repository-domain/pom.xml regulation-repository/regulation-repository-domain/
+COPY regulation-repository/regulation-repository-application/pom.xml regulation-repository/regulation-repository-application/
+COPY regulation-repository/regulation-repository-infrastructure/pom.xml regulation-repository/regulation-repository-infrastructure/
+COPY regulation-repository/regulation-repository-api/pom.xml regulation-repository/regulation-repository-api/
+COPY rule-translation-engine/pom.xml rule-translation-engine/
+COPY rule-translation-engine/rule-translation-engine-domain/pom.xml rule-translation-engine/rule-translation-engine-domain/
+COPY rule-translation-engine/rule-translation-engine-application/pom.xml rule-translation-engine/rule-translation-engine-application/
+COPY rule-translation-engine/rule-translation-engine-infrastructure/pom.xml rule-translation-engine/rule-translation-engine-infrastructure/
+COPY rule-translation-engine/rule-translation-engine-api/pom.xml rule-translation-engine/rule-translation-engine-api/
+
+# Cache dependencies
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY pqvcf-shared-kernel/src pqvcf-shared-kernel/src/
+COPY rule-translation-engine/rule-translation-engine-domain/src rule-translation-engine/rule-translation-engine-domain/src/
+COPY rule-translation-engine/rule-translation-engine-application/src rule-translation-engine/rule-translation-engine-application/src/
+COPY rule-translation-engine/rule-translation-engine-infrastructure/src rule-translation-engine/rule-translation-engine-infrastructure/src/
+COPY rule-translation-engine/rule-translation-engine-api/src rule-translation-engine/rule-translation-engine-api/src/
+
+# Package applications
+RUN mvn package -pl rule-translation-engine/rule-translation-engine-api -am -DskipTests
+
+# Run Stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/rule-translation-engine/rule-translation-engine-api/target/rule-translation-engine-api-1.0.0-SNAPSHOT.jar app.jar
+EXPOSE 8082
+ENTRYPOINT ["java", "-jar", "app.jar"]

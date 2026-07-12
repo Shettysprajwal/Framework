@@ -1,0 +1,17 @@
+# Maven target folders
+**/target/
+*.iml
+.idea/
+.project
+.classpath
+.settings/
+
+# Node modules and vite builds
+**/node_modules/
+**/dist/
+*.local
+.eslintcache
+
+# OS-specific files
+.DS_Store
+Thumbs.db

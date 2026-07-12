@@ -1,0 +1,46 @@
+# Build Stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY pqvcf-shared-kernel/pom.xml pqvcf-shared-kernel/
+COPY regulation-repository/pom.xml regulation-repository/
+COPY regulation-repository/regulation-repository-domain/pom.xml regulation-repository/regulation-repository-domain/
+COPY regulation-repository/regulation-repository-application/pom.xml regulation-repository/regulation-repository-application/
+COPY regulation-repository/regulation-repository-infrastructure/pom.xml regulation-repository/regulation-repository-infrastructure/
+COPY regulation-repository/regulation-repository-api/pom.xml regulation-repository/regulation-repository-api/
+COPY rule-translation-engine/pom.xml rule-translation-engine/
+COPY rule-translation-engine/rule-translation-engine-domain/pom.xml rule-translation-engine/rule-translation-engine-domain/
+COPY rule-translation-engine/rule-translation-engine-application/pom.xml rule-translation-engine/rule-translation-engine-application/
+COPY rule-translation-engine/rule-translation-engine-infrastructure/pom.xml rule-translation-engine/rule-translation-engine-infrastructure/
+COPY rule-translation-engine/rule-translation-engine-api/pom.xml rule-translation-engine/rule-translation-engine-api/
+COPY policy-administration-point/pom.xml policy-administration-point/
+COPY policy-administration-point/policy-administration-point-domain/pom.xml policy-administration-point/policy-administration-point-domain/
+COPY policy-administration-point/policy-administration-point-application/pom.xml policy-administration-point/policy-administration-point-application/
+COPY policy-administration-point/policy-administration-point-infrastructure/pom.xml policy-administration-point/policy-administration-point-infrastructure/
+COPY policy-administration-point/policy-administration-point-api/pom.xml policy-administration-point/policy-administration-point-api/
+COPY policy-information-point/pom.xml policy-information-point/
+COPY policy-information-point/policy-information-point-domain/pom.xml policy-information-point/policy-information-point-domain/
+COPY policy-information-point/policy-information-point-application/pom.xml policy-information-point/policy-information-point-application/
+COPY policy-information-point/policy-information-point-infrastructure/pom.xml policy-information-point/policy-information-point-infrastructure/
+COPY policy-information-point/policy-information-point-api/pom.xml policy-information-point/policy-information-point-api/
+
+# Cache dependencies
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY pqvcf-shared-kernel/src pqvcf-shared-kernel/src/
+COPY regulation-repository/regulation-repository-api/src regulation-repository/regulation-repository-api/src/
+COPY policy-information-point/policy-information-point-domain/src policy-information-point/policy-information-point-domain/src/
+COPY policy-information-point/policy-information-point-application/src policy-information-point/policy-information-point-application/src/
+COPY policy-information-point/policy-information-point-infrastructure/src policy-information-point/policy-information-point-infrastructure/src/
+COPY policy-information-point/policy-information-point-api/src policy-information-point/policy-information-point-api/src/
+
+# Package applications
+RUN mvn package -pl policy-information-point/policy-information-point-api -am -DskipTests
+
+# Run Stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/policy-information-point/policy-information-point-api/target/policy-information-point-api-1.0.0-SNAPSHOT.jar app.jar
+EXPOSE 8084
+ENTRYPOINT ["java", "-jar", "app.jar"]

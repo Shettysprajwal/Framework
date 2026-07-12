@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>regulation-repository</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>regulation-repository-domain</artifactId>
+    <packaging>jar</packaging>
+    <name>PQVCF — Regulation Repository: Domain Layer</name>
+    <description>
+        Pure domain model for the Regulation Knowledge Repository.
+        Contains aggregate roots, entities, value objects, domain events,
+        repository ports, and domain services. ZERO framework dependencies.
+    </description>
+
+    <dependencies>
+        <!-- Shared kernel — our own cross-cutting types -->
+        <dependency>
+            <groupId>com.pqvcf</groupId>
+            <artifactId>pqvcf-shared-kernel</artifactId>
+        </dependency>
+
+        <!-- Jakarta Validation annotations only — no runtime dependency -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

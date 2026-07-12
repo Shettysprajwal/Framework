@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>pqvcf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>policy-information-point</artifactId>
+    <packaging>pom</packaging>
+    <name>PQVCF — Module 4: Policy Information Point</name>
+    <description>
+        Module 4 of PQVCF. Serves dynamic context attributes (Subject, Resource, Action, Environment)
+        for policy decisions and resolves transitivity path safety in Graph Store adequacy agreements.
+    </description>
+
+    <modules>
+        <module>policy-information-point-domain</module>
+        <module>policy-information-point-application</module>
+        <module>policy-information-point-infrastructure</module>
+        <module>policy-information-point-api</module>
+    </modules>
+</project>

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package com.pqvcf.pqc.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.pqc.grpc";
+option java_outer_classname = "PqcProto";
+
+service PqcCryptography {
+    rpc GenerateKeyPair(KeyPairRequest) returns (KeyPairResponse);
+    rpc SignPayload(SignPayloadRequest) returns (SignPayloadResponse);
+    rpc VerifySignature(VerifySignatureRequest) returns (VerifySignatureResponse);
+}
+
+message KeyPairRequest {
+    string algorithm = 1;
+    string alias = 2;
+}
+
+message KeyPairResponse {
+    string key_id = 1;
+    string algorithm = 2;
+    string public_key_hex = 3;
+    string created_at = 4;
+    string expires_at = 5;
+}
+
+message SignPayloadRequest {
+    string key_id = 1;
+    string payload_hex = 2;
+}
+
+message SignPayloadResponse {
+    string signature_hex = 1;
+    string algorithm = 2;
+    string key_id = 3;
+    int32 signature_length = 4;
+}
+
+message VerifySignatureRequest {
+    string key_id = 1;
+    string payload_hex = 2;
+    string signature_hex = 3;
+}
+
+message VerifySignatureResponse {
+    bool is_valid = 1;
+}

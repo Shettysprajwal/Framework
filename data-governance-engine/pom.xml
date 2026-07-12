@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>pqvcf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>data-governance-engine</artifactId>
+    <packaging>pom</packaging>
+    <name>PQVCF — Module 8: Data Governance Engine</name>
+    <description>
+        Module 8 of PQVCF. Evaluates legality of cross-border data movements
+        against adequacy databases, localization conditions, and processing permissions.
+    </description>
+
+    <modules>
+        <module>data-governance-engine-domain</module>
+        <module>data-governance-engine-application</module>
+        <module>data-governance-engine-infrastructure</module>
+        <module>data-governance-engine-api</module>
+    </modules>
+</project>

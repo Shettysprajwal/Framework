@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: compliance-monitor-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/pqvcf_regulations}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+
+pqvcf:
+  governance:
+    grpc:
+      host: ${PQVCF_GOVERNANCE_GRPC_HOST:localhost}
+      port: ${PQVCF_GOVERNANCE_GRPC_PORT:9098}
+
+server:
+  port: 8089
+
+logging:
+  level:
+    root: INFO
+    com.pqvcf: DEBUG

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package com.pqvcf.pap.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.pap.grpc";
+option java_outer_classname = "PolicyProto";
+
+service PolicyAdministrationService {
+    rpc CreateCompliancePolicy(PolicyRequest) returns (PolicyDetailResponse);
+    rpc GetActivePolicies(ActiveRequest) returns (PoliciesListResponse);
+}
+
+message PolicyRequest {
+    string name = 1;
+    string owner = 2;
+    string description = 3;
+}
+
+message PolicyDetailResponse {
+    string id = 1;
+    string name = 2;
+    string owner = 3;
+    string description = 4;
+    string status = 5;
+    repeated RuleLinkDetail rule_links = 6;
+}
+
+message RuleLinkDetail {
+    string id = 1;
+    string policy_id = 2;
+    string organizational_rule_name = 3;
+    string regulatory_rule_id = 4;
+    string description = 5;
+}
+
+message ActiveRequest {}
+
+message PoliciesListResponse {
+    repeated PolicyDetailResponse policies = 1;
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package com.pqvcf.ledger.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.ledger.grpc";
+option java_outer_classname = "LedgerProto";
+
+service AuditingLedger {
+    rpc LogAudit(AuditRequest) returns (AuditResponse);
+}
+
+message AuditRequest {
+    string action = 1;
+    string actor = 2;
+    string target = 3;
+    string decision = 4;
+}
+
+message AuditResponse {
+    string record_id = 1;
+    string timestamp = 2;
+    string action = 3;
+    string actor = 4;
+    string target = 5;
+    string decision = 6;
+    string previous_hash = 7;
+    string current_hash = 8;
+}

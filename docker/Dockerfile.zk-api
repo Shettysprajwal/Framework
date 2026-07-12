@@ -1,0 +1,60 @@
+# Build Stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY pqvcf-shared-kernel/pom.xml pqvcf-shared-kernel/
+COPY regulation-repository/pom.xml regulation-repository/
+COPY regulation-repository/regulation-repository-domain/pom.xml regulation-repository/regulation-repository-domain/
+COPY regulation-repository/regulation-repository-application/pom.xml regulation-repository/regulation-repository-application/
+COPY regulation-repository/regulation-repository-infrastructure/pom.xml regulation-repository/regulation-repository-infrastructure/
+COPY regulation-repository/regulation-repository-api/pom.xml regulation-repository/regulation-repository-api/
+COPY rule-translation-engine/pom.xml rule-translation-engine/
+COPY rule-translation-engine/rule-translation-engine-domain/pom.xml rule-translation-engine/rule-translation-engine-domain/
+COPY rule-translation-engine/rule-translation-engine-application/pom.xml rule-translation-engine/rule-translation-engine-application/
+COPY rule-translation-engine/rule-translation-engine-infrastructure/pom.xml rule-translation-engine/rule-translation-engine-infrastructure/
+COPY rule-translation-engine/rule-translation-engine-api/pom.xml rule-translation-engine/rule-translation-engine-api/
+COPY policy-administration-point/pom.xml policy-administration-point/
+COPY policy-administration-point/policy-administration-point-domain/pom.xml policy-administration-point/policy-administration-point-domain/
+COPY policy-administration-point/policy-administration-point-application/pom.xml policy-administration-point/policy-administration-point-application/
+COPY policy-administration-point/policy-administration-point-infrastructure/pom.xml policy-administration-point/policy-administration-point-infrastructure/
+COPY policy-administration-point/policy-administration-point-api/pom.xml policy-administration-point/policy-administration-point-api/
+COPY policy-information-point/pom.xml policy-information-point/
+COPY policy-information-point/policy-information-point-domain/pom.xml policy-information-point/policy-information-point-domain/
+COPY policy-information-point/policy-information-point-application/pom.xml policy-information-point/policy-information-point-application/
+COPY policy-information-point/policy-information-point-infrastructure/pom.xml policy-information-point/policy-information-point-infrastructure/
+COPY policy-information-point/policy-information-point-api/pom.xml policy-information-point/policy-information-point-api/
+COPY policy-decision-point/pom.xml policy-decision-point/
+COPY policy-decision-point/policy-decision-point-domain/pom.xml policy-decision-point/policy-decision-point-domain/
+COPY policy-decision-point/policy-decision-point-application/pom.xml policy-decision-point/policy-decision-point-application/
+COPY policy-decision-point/policy-decision-point-infrastructure/pom.xml policy-decision-point/policy-decision-point-infrastructure/
+COPY policy-decision-point/policy-decision-point-api/pom.xml policy-decision-point/policy-decision-point-api/
+COPY pqc-crypto-layer/pom.xml pqc-crypto-layer/
+COPY pqc-crypto-layer/pqc-crypto-layer-domain/pom.xml pqc-crypto-layer/pqc-crypto-layer-domain/
+COPY pqc-crypto-layer/pqc-crypto-layer-application/pom.xml pqc-crypto-layer/pqc-crypto-layer-application/
+COPY pqc-crypto-layer/pqc-crypto-layer-infrastructure/pom.xml pqc-crypto-layer/pqc-crypto-layer-infrastructure/
+COPY pqc-crypto-layer/pqc-crypto-layer-api/pom.xml pqc-crypto-layer/pqc-crypto-layer-api/
+COPY zk-proof-engine/pom.xml zk-proof-engine/
+COPY zk-proof-engine/zk-proof-engine-domain/pom.xml zk-proof-engine/zk-proof-engine-domain/
+COPY zk-proof-engine/zk-proof-engine-application/pom.xml zk-proof-engine/zk-proof-engine-application/
+COPY zk-proof-engine/zk-proof-engine-infrastructure/pom.xml zk-proof-engine/zk-proof-engine-infrastructure/
+COPY zk-proof-engine/zk-proof-engine-api/pom.xml zk-proof-engine/zk-proof-engine-api/
+
+# Cache dependencies
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY pqvcf-shared-kernel/src pqvcf-shared-kernel/src/
+COPY zk-proof-engine/zk-proof-engine-domain/src zk-proof-engine/zk-proof-engine-domain/src/
+COPY zk-proof-engine/zk-proof-engine-application/src zk-proof-engine/zk-proof-engine-application/src/
+COPY zk-proof-engine/zk-proof-engine-infrastructure/src zk-proof-engine/zk-proof-engine-infrastructure/src/
+COPY zk-proof-engine/zk-proof-engine-api/src zk-proof-engine/zk-proof-engine-api/src/
+
+# Package applications
+RUN mvn package -pl zk-proof-engine/zk-proof-engine-api -am -DskipTests
+
+# Run Stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/zk-proof-engine/zk-proof-engine-api/target/zk-proof-engine-api-1.0.0-SNAPSHOT.jar app.jar
+EXPOSE 8087
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,0 +1,241 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pqvcf-postgres
+    environment:
+      POSTGRES_DB: pqvcf_regulations
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pqvcf_regulations"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.20-community
+    container_name: pqvcf-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "password", "RETURN 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  regulation-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.regulation-api
+    container_name: pqvcf-regulation-api
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_NEO4J_URI: bolt://neo4j:7687
+      SPRING_NEO4J_USERNAME: neo4j
+      SPRING_NEO4J_PASSWORD: password
+      PQVCF_NEO4J_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+
+  regulation-frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.regulation-frontend
+    container_name: pqvcf-regulation-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - regulation-api
+      - rule-translation-api
+      - policy-administration-api
+      - policy-information-api
+      - policy-decision-api
+      - pqc-crypto-api
+      - zk-proof-api
+      - data-governance-api
+      - compliance-monitor-api
+      - auditing-ledger-api
+
+  policy-administration-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.policy-api
+    container_name: pqvcf-policy-administration-api
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  policy-information-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pip-api
+    container_name: pqvcf-policy-information-api
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PQVCF_REGULATION_GRPC_HOST: regulation-api
+      PQVCF_REGULATION_GRPC_PORT: 9091
+    depends_on:
+      postgres:
+        condition: service_healthy
+      regulation-api:
+        condition: service_started
+
+  policy-decision-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pdp-api
+    container_name: pqvcf-policy-decision-api
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PQVCF_PAP_GRPC_HOST: policy-administration-api
+      PQVCF_PAP_GRPC_PORT: 9093
+      PQVCF_PIP_GRPC_HOST: policy-information-api
+      PQVCF_PIP_GRPC_PORT: 9094
+    depends_on:
+      postgres:
+        condition: service_healthy
+      policy-administration-api:
+        condition: service_started
+      policy-information-api:
+        condition: service_started
+
+  pqc-crypto-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pqc-api
+    container_name: pqvcf-pqc-crypto-api
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  zk-proof-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.zk-api
+    container_name: pqvcf-zk-proof-api
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  data-governance-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.governance-api
+    container_name: pqvcf-data-governance-api
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  compliance-monitor-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.monitor-api
+    container_name: pqvcf-compliance-monitor-api
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PQVCF_GOVERNANCE_GRPC_HOST: data-governance-api
+      PQVCF_GOVERNANCE_GRPC_PORT: 9098
+    depends_on:
+      postgres:
+        condition: service_healthy
+      data-governance-api:
+        condition: service_started
+
+  auditing-ledger-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ledger-api
+    container_name: pqvcf-auditing-ledger-api
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nlp-extractor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nlp-extractor
+    container_name: pqvcf-nlp-extractor
+    ports:
+      - "5001:5001"
+
+  rule-translation-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.translation-api
+    container_name: pqvcf-rule-translation-api
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pqvcf_regulations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PQVCF_NLP_URL: http://nlp-extractor:5001/extract
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nlp-extractor:
+        restart: on-failure
+
+volumes:
+  postgres_data:
+  neo4j_data:

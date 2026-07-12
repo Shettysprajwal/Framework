@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>data-governance-engine</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>data-governance-engine-domain</artifactId>
+    <packaging>jar</packaging>
+    <name>PQVCF — Data Governance Engine: Domain Layer</name>
+    <description>
+        Transfer decisions, data flow configurations, localization checkers, and governance repository ports. Pure Java only.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.pqvcf</groupId>
+            <artifactId>pqvcf-shared-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

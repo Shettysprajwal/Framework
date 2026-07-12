@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>pqvcf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>rule-translation-engine</artifactId>
+    <packaging>pom</packaging>
+    <name>PQVCF — Module 2: Legal Rule Translation Engine</name>
+    <description>
+        Translates legal regulatory texts (GDPR, DPDP, HIPAA) written in Controlled Natural Language (CNL)
+        into executable deontic logic formulas, W3C ODRL policies, and Z3-compatible SMT-LIB2 specifications.
+    </description>
+
+    <modules>
+        <module>rule-translation-engine-domain</module>
+        <module>rule-translation-engine-application</module>
+        <module>rule-translation-engine-infrastructure</module>
+        <module>rule-translation-engine-api</module>
+    </modules>
+</project>

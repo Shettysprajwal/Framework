@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package com.pqvcf.pdp.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.pdp.grpc";
+option java_outer_classname = "PdpProto";
+
+service PolicyDecisionPoint {
+    rpc EvaluateCompliance(EvaluateRequest) returns (EvaluateResponse);
+}
+
+message EvaluateRequest {
+    string subject_id = 1;
+    string resource_id = 2;
+    string action_id = 3;
+    string source_country = 4;
+    string target_country = 5;
+    string policy_name = 6;
+}
+
+message EvaluateResponse {
+    string effect = 1;
+    string proof_trace = 2;
+    string validation_log = 3;
+    string solved_at = 4;
+}

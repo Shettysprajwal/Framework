@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.pqvcf.pip.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.pqvcf.pip.grpc";
+option java_outer_classname = "PipProto";
+
+service PolicyInformationPoint {
+    rpc ResolveRequestContext(AttributeResolveRequest) returns (AttributeResolveResponse);
+}
+
+message AttributeResolveRequest {
+    string subject_id = 1;
+    string resource_id = 2;
+    string action_id = 3;
+    string source_country = 4;
+    string target_country = 5;
+}
+
+message AttributeResolveResponse {
+    string subject_id = 1;
+    string resource_id = 2;
+    string action_id = 3;
+    repeated AttributeDetail attributes = 4;
+    bool is_transitive_adequate = 5;
+}
+
+message AttributeDetail {
+    string category = 1;
+    string key = 2;
+    string value = 3;
+    string data_type = 4;
+}

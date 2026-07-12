@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pqvcf</groupId>
+        <artifactId>pqvcf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>auditing-ledger</artifactId>
+    <packaging>pom</packaging>
+    <name>PQVCF — Module 10: Compliance Auditing Ledger</name>
+    <description>
+        Module 10 of PQVCF. Builds a cryptographically chained, tamper-evident
+        auditing ledger to guarantee historical integrity of compliance decisions.
+    </description>
+
+    <modules>
+        <module>auditing-ledger-domain</module>
+        <module>auditing-ledger-application</module>
+        <module>auditing-ledger-infrastructure</module>
+        <module>auditing-ledger-api</module>
+    </modules>
+</project>

@@ -1,0 +1,30 @@
+# Build Stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY pqvcf-shared-kernel/pom.xml pqvcf-shared-kernel/
+COPY regulation-repository/pom.xml regulation-repository/
+COPY regulation-repository/regulation-repository-domain/pom.xml regulation-repository/regulation-repository-domain/
+COPY regulation-repository/regulation-repository-application/pom.xml regulation-repository/regulation-repository-application/
+COPY regulation-repository/regulation-repository-infrastructure/pom.xml regulation-repository/regulation-repository-infrastructure/
+COPY regulation-repository/regulation-repository-api/pom.xml regulation-repository/regulation-repository-api/
+
+# Cache dependencies
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY pqvcf-shared-kernel/src pqvcf-shared-kernel/src/
+COPY regulation-repository/regulation-repository-domain/src regulation-repository/regulation-repository-domain/src/
+COPY regulation-repository/regulation-repository-application/src regulation-repository/regulation-repository-application/src/
+COPY regulation-repository/regulation-repository-infrastructure/src regulation-repository/regulation-repository-infrastructure/src/
+COPY regulation-repository/regulation-repository-api/src regulation-repository/regulation-repository-api/src/
+
+# Package applications
+RUN mvn package -DskipTests
+
+# Run Stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/regulation-repository/regulation-repository-api/target/regulation-repository-api-1.0.0-SNAPSHOT.jar app.jar
+EXPOSE 8081
+ENTRYPOINT ["java", "-jar", "app.jar"]
